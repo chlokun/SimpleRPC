@@ -1,5 +1,5 @@
 # SimpleRPC
-Simple, cross platform Discord RPC server that can be run using npm
+Simple, cross platform Discord RPC server that can be run using node.
 
 ## Prerequisites
 In order to run this app **you will need to install Node.js and npm.** Node.js can be downloaded from [here](https://nodejs.org/en/download/). Npm is included with Node.js, so you don't need to download it separately.
