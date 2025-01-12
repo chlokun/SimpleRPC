@@ -1,8 +1,12 @@
 # SimpleRPC
 Simple, cross platform Discord RPC server that can be run using npm
 
+## Prerequisites
+In order to run this app **you will need to install Node.js and npm.** Node.js can be downloaded from [here](https://nodejs.org/en/download/). Npm is included with Node.js, so you don't need to download it separately.
+You will also need a Discord application with a client ID and secret,
+and a code editor like Notepad++ or VS Code.
 
-# Setup
+## Setup
 To setup and run the RPC server, you need to clone the repo and run the following commands:
 - npm install discord-rpc
 - npm install dotenv
@@ -20,16 +24,16 @@ This can be done be going to  the [Discord Developer Portal](https://discord.com
 
 Everything else is documented in the .env.example file :))
 
-# Running the server
+## Running the server
 
 To run the server, run the following command: `node index.js` and it should start the server. To see if it works, just check Discord and see if the RPC is showing up. Or in the terminal, it should say RPC connected.
 
 In case of it erroring out, please open an issue featuring the error message and I will try to fix it as soon as possible.
 
-# Contributing
+## Contributing
 
 Contributions are welcome and encouraged! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request. Please make sure to follow the existing code style and include tests for any new features or changes.
 
-# Support
+## Support
 
 If you want to support my work, just star the repo and follow me on GitHub. Im not the type of person who asks for money.
