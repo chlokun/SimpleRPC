@@ -129,8 +129,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 discord-rpc-server/.DS_Store
-/.DS_Store
-../.DS_Store
 # macOS system files
 .DS_Store
 .AppleDouble
