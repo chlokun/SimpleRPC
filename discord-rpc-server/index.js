@@ -51,33 +51,33 @@ async function setActivity() {
       smallImageText: process.env.SMALL_IMAGE_TEXT,
       buttons: createButtons()
     });
-    console.log('󰄲 Activity updated successfully');
+    console.log('󰄲 Activity updated successfully at ' + new Date().toLocaleTimeString());
   } catch (error) {
-    console.error('󰚌 Error setting activity:', error);
+    console.error('󰚌 Error setting activity at ' + new Date().toLocaleTimeString() + ':', error);
   }
 }
 
 // Handle RPC ready event
 rpc.on('ready', () => {
-  console.log('󰟡 RPC client ready');
-  console.log('󱎫 Connected as:', rpc.user.username);
+  console.log('󰟡 RPC client ready at ' + new Date().toLocaleTimeString());
+  console.log('󱎫 Connected as ' + rpc.user.username + ' at ' + new Date().toLocaleTimeString());
   setActivity();
 });
 
 // Handle connection
 rpc.login({ clientId }).catch((error) => {
-  console.error('󰌑 Connection failed:', error);
+  console.error('󰌑 Connection failed at ' + new Date().toLocaleTimeString() + ':', error);
 });
 
 // Cleanup on exit
 process.on('SIGINT', () => {
-  console.log('󰗼 Shutting down...');
+  console.log('󰗼 Shutting down at ' + new Date().toLocaleTimeString() + '...');
   rpc.destroy().catch(console.error);
   process.exit();
 });
 
 process.on('SIGTERM', () => {
-  console.log('󰗼 Shutting down...');
+  console.log('󰗼 Shutting down at ' + new Date().toLocaleTimeString() + '...');
   rpc.destroy().catch(console.error);
   process.exit();
 });
