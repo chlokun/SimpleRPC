@@ -13,15 +13,10 @@ const rpc = new RPC.Client({ transport: 'ipc' });
 // Store the start timestamp
 const startTimestamp = new Date();
 
-// Set the activity for the RPC client
-function setActivity() {
-  if (!rpc) {
-    console.log('RPC client not initialized');
-    return;
-  }
-
+// Helper function to create valid buttons array
+function createButtons() {
   const buttons = [];
-
+  
   if (process.env.BUTTON_LABEL && process.env.BUTTON_URL) {
     buttons.push({
       label: process.env.BUTTON_LABEL,
@@ -36,49 +31,53 @@ function setActivity() {
     });
   }
 
- rpc.setActivity({
-  details: process.env.DETAILS,
-  state: process.env.STATE,
-  startTimestamp: startTimestamp,
-  largeImageKey: process.env.LARGE_IMAGE_KEY,
-  largeImageText: process.env.LARGE_IMAGE_TEXT,
-  smallImageKey: process.env.SMALL_IMAGE_KEY,
-  smallImageText: process.env.SMALL_IMAGE_TEXT,
-  instance: false,
-  type: parseInt(process.env.ACTIVITY_TYPE, 10),
-  buttons: buttons,
-}).then(() => {
-  console.log('󰄳 Activity set successfully:', {
-    details: process.env.DETAILS,
-    state: process.env.STATE,
-    startTimestamp: startTimestamp,
-    largeImageKey: process.env.LARGE_IMAGE_KEY,
-    largeImageText: process.env.LARGE_IMAGE_TEXT,
-    smallImageKey: process.env.SMALL_IMAGE_KEY,
-    smallImageText: process.env.SMALL_IMAGE_TEXT,
-    buttons: buttons,
-  });
-}).catch((error) => {
-  console.error('󰚌 Error setting activity:', error);
-});
+  return buttons;
 }
 
-// Log in to the RPC client
+// Set the activity for the RPC client
+async function setActivity() {
+  try {
+    if (!rpc) {
+      throw new Error('RPC client not initialized');
+    }
+
+    await rpc.setActivity({
+      details: process.env.DETAILS || 'No details set',
+      state: process.env.STATE || 'No state set',
+      startTimestamp,
+      largeImageKey: process.env.LARGE_IMAGE_KEY || 'default',
+      largeImageText: process.env.LARGE_IMAGE_TEXT,
+      smallImageKey: process.env.SMALL_IMAGE_KEY,
+      smallImageText: process.env.SMALL_IMAGE_TEXT,
+      buttons: createButtons()
+    });
+    console.log('󰄲 Activity updated successfully');
+  } catch (error) {
+    console.error('󰚌 Error setting activity:', error);
+  }
+}
+
+// Handle RPC ready event
 rpc.on('ready', () => {
-console.log('󰊴 RPC client ready');
-setActivity();
-
-// Update the activity every 15 seconds without resetting the timer
-setInterval(() => {
-  console.log('󰑓 Updating activity');
+  console.log('󰟡 RPC client ready');
+  console.log('󱎫 Connected as:', rpc.user.username);
   setActivity();
-}, 15000);
 });
 
-rpc.on('disconnected', () => {
-console.log('󰤭 RPC client disconnected');
+// Handle connection
+rpc.login({ clientId }).catch((error) => {
+  console.error('󰌑 Connection failed:', error);
 });
 
-rpc.on('error', (error) => {
-console.error('󰇯 RPC client error:', error);
+// Cleanup on exit
+process.on('SIGINT', () => {
+  console.log('󰗼 Shutting down...');
+  rpc.destroy().catch(console.error);
+  process.exit();
+});
+
+process.on('SIGTERM', () => {
+  console.log('󰗼 Shutting down...');
+  rpc.destroy().catch(console.error);
+  process.exit();
 });
