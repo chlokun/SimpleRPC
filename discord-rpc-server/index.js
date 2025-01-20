@@ -36,55 +36,49 @@ function setActivity() {
     });
   }
 
-  rpc.setActivity({
+ rpc.setActivity({
+  details: process.env.DETAILS,
+  state: process.env.STATE,
+  startTimestamp: startTimestamp,
+  largeImageKey: process.env.LARGE_IMAGE_KEY,
+  largeImageText: process.env.LARGE_IMAGE_TEXT,
+  smallImageKey: process.env.SMALL_IMAGE_KEY,
+  smallImageText: process.env.SMALL_IMAGE_TEXT,
+  instance: false,
+  type: parseInt(process.env.ACTIVITY_TYPE, 10),
+  buttons: buttons,
+}).then(() => {
+  console.log('󰄳 Activity set successfully:', {
     details: process.env.DETAILS,
     state: process.env.STATE,
-    startTimestamp: startTimestamp, // Use a fixed start timestamp
+    startTimestamp: startTimestamp,
     largeImageKey: process.env.LARGE_IMAGE_KEY,
     largeImageText: process.env.LARGE_IMAGE_TEXT,
     smallImageKey: process.env.SMALL_IMAGE_KEY,
     smallImageText: process.env.SMALL_IMAGE_TEXT,
-    instance: false,
-    type: parseInt(process.env.ACTIVITY_TYPE, 10),
     buttons: buttons,
-  }).then(() => {
-    console.log('Activity set successfully:', {
-      details: process.env.DETAILS,
-      state: process.env.STATE,
-      startTimestamp: startTimestamp,
-      largeImageKey: process.env.LARGE_IMAGE_KEY,
-      largeImageText: process.env.LARGE_IMAGE_TEXT,
-      smallImageKey: process.env.SMALL_IMAGE_KEY,
-      smallImageText: process.env.SMALL_IMAGE_TEXT,
-      buttons: buttons,
-    });
-  }).catch((error) => {
-    console.error('Error setting activity:', error);
   });
+}).catch((error) => {
+  console.error('󰚌 Error setting activity:', error);
+});
 }
 
 // Log in to the RPC client
 rpc.on('ready', () => {
-  console.log('RPC client ready');
-  setActivity();
+console.log('󰊴 RPC client ready');
+setActivity();
 
-  // Update the activity every 15 seconds without resetting the timer
-  setInterval(() => {
-    console.log('Updating activity');
-    setActivity();
-  }, 15000);
+// Update the activity every 15 seconds without resetting the timer
+setInterval(() => {
+  console.log('󰑓 Updating activity');
+  setActivity();
+}, 15000);
 });
 
 rpc.on('disconnected', () => {
-  console.log('RPC client disconnected');
+console.log('󰤭 RPC client disconnected');
 });
 
 rpc.on('error', (error) => {
-  console.error('RPC client error:', error);
-});
-
-rpc.login({ clientId }).then(() => {
-  console.log('Logged in successfully');
-}).catch((error) => {
-  console.error('Error logging in:', error);
+console.error('󰇯 RPC client error:', error);
 });
