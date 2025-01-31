@@ -30,10 +30,6 @@ To run the server, run the following command: `node index.js` and it should star
 
 In case of it erroring out, please open an issue featuring the error message and I will try to fix it as soon as possible.
 
-## Contributing
-
-Contributions are welcome and encouraged! If you have any ideas, suggestions, or bug reports, please open an issue or submit a pull request. Please make sure to follow the existing code style and include tests for any new features or changes.
-
 ## Support
 
 If you want to support my work, just star the repo and follow me on GitHub. Im not the type of person who asks for money.
