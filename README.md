@@ -12,6 +12,7 @@ A feature-rich Discord Rich Presence client with a Terminal User Interface (TUI)
 - 🧙‍♂️ **Setup Wizard** - Guided setup for first-time users
 - 📊 **Status Dashboard** - Monitor connection status and activity
 - 📝 **Live Logs** - View application events in real-time
+- 🔙 **Background Mode** - Run in the background without a terminal window
 
 ## Installation
 
@@ -42,7 +43,7 @@ npm start
 ## Usage
 
 ```bash
-# Start SimpleRPC
+# Start SimpleRPC with the TUI
 rpc
 
 # Run setup wizard
@@ -51,9 +52,35 @@ rpc --setup
 # Reset configuration
 rpc --reset
 
+# Run in background mode
+rpc --detach
+
+# Check status of background process
+rpc --status
+
+# Stop background process
+rpc --stop
+
 # Show help
 rpc --help
 ```
+
+## Background Mode
+
+SimpleRPC can run in the background without requiring a terminal window to stay open:
+
+```bash
+# Start SimpleRPC in background mode
+rpc --detach
+
+# Check if it's running and get status
+rpc --status
+
+# Stop the background process
+rpc --stop
+```
+
+When running in background mode, logs are stored in `.simplerpc.log` in the installation directory.
 
 ## Configuration
 
