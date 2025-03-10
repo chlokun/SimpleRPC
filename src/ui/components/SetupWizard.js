@@ -1,57 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Text, useApp } from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
 import fs from 'fs/promises';
 import path from 'path';
-import { envExample } from '../../utils/env.js';
+import { fileURLToPath } from 'url';
+import { envExample, getFieldDescriptions } from '../../utils/env.js';
 
-const steps = [
-  {
-    id: 'clientId',
-    label: 'Discord Client ID',
-    description: 'Enter your Discord application client ID from the Developer Portal',
-    default: '',
-    required: true
-  },
-  {
-    id: 'details',
-    label: 'Activity Details',
-    description: 'Text that appears as the first line of your activity',
-    default: 'Playing a game',
-    required: false
-  },
-  {
-    id: 'state',
-    label: 'Activity State',
-    description: 'Text that appears as the second line of your activity',
-    default: 'In a match',
-    required: false
-  },
-  {
-    id: 'largeImageKey',
-    label: 'Large Image Key',
-    description: 'Key for the large image (must be uploaded to your Discord application)',
-    default: '',
-    required: false
-  },
-  {
-    id: 'largeImageText',
-    label: 'Large Image Text',
-    description: 'Text that appears when hovering over the large image',
-    default: '',
-    required: false
-  },
-  {
-    id: 'activityType',
-    label: 'Activity Type (0=Playing, 1=Streaming, 2=Listening, 3=Watching, 5=Competing)',
-    description: 'Number representing the type of activity',
-    default: '0',
-    required: false
-  },
+// Get the directory name properly in ES modules
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.join(__dirname, '..', '..', '..');
+
+// Fields for the setup wizard
+const fields = [
+  { id: 'CLIENT_ID', label: 'Discord Client ID', required: true },
+  { id: 'DETAILS', label: 'Activity Details', default: 'Playing a game' },
+  { id: 'STATE', label: 'Activity State', default: 'In a match' },
+  { id: 'ACTIVITY_TYPE', label: 'Activity Type', default: '0' },
+  { id: 'LARGE_IMAGE_KEY', label: 'Large Image Key' },
+  { id: 'LARGE_IMAGE_TEXT', label: 'Large Image Text' },
+  { id: 'SMALL_IMAGE_KEY', label: 'Small Image Key' },
+  { id: 'SMALL_IMAGE_TEXT', label: 'Small Image Text' },
+  { id: 'BUTTON_LABEL', label: 'Button 1 Label' },
+  { id: 'BUTTON_URL', label: 'Button 1 URL' },
+  { id: 'BUTTON2_LABEL', label: 'Button 2 Label' },
+  { id: 'BUTTON2_URL', label: 'Button 2 URL' }
 ];
 
-export const SetupWizard = ({ reset = false }) => {
+// Field descriptions
+const descriptions = getFieldDescriptions();
+
+const SetupWizard = ({ reset = false }) => {
   const { exit } = useApp();
   const [currentStep, setCurrentStep] = useState(0);
   const [values, setValues] = useState({});
@@ -59,30 +38,77 @@ export const SetupWizard = ({ reset = false }) => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const step = steps[currentStep];
+  const currentField = fields[currentStep];
+
+  // Load existing values if present
+  useEffect(() => {
+    const loadExistingConfig = async () => {
+      try {
+        setIsLoading(true);
+        
+        if (!reset) {
+          const envPath = path.join(rootDir, '.env');
+          const fileExists = await fs.access(envPath).then(() => true).catch(() => false);
+          
+          if (fileExists) {
+            const content = await fs.readFile(envPath, 'utf8');
+            const existingValues = {};
+            
+            content.split('\n').forEach(line => {
+              if (line && !line.startsWith('#')) {
+                const [key, ...valueParts] = line.split('=');
+                if (key && key.trim()) {
+                  existingValues[key.trim()] = valueParts.join('=').trim();
+                }
+              }
+            });
+            
+            setValues(existingValues);
+          }
+        }
+        
+        // Set the initial value for the first step
+        setValue(values[currentField.id] || currentField.default || '');
+        
+      } catch (err) {
+        setError(`Failed to load config: ${err.message}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadExistingConfig();
+  }, [reset]);
+
+  // Update value when step changes
+  useEffect(() => {
+    if (!isLoading) {
+      setValue(values[currentField.id] || currentField.default || '');
+    }
+  }, [currentStep, isLoading]);
 
   const handleSubmit = async () => {
     // If this is the last step, save the config
-    if (currentStep === steps.length - 1) {
-      const updatedValues = { ...values, [step.id]: value };
+    if (currentStep === fields.length - 1) {
+      const updatedValues = { ...values, [currentField.id]: value };
       setSaving(true);
       
       try {
-        // Generate .env file content
-        const envContent = envExample
-          .split('\n')
-          .map(line => {
-            const [key] = line.split('=');
-            if (key && updatedValues[key.toLowerCase()]) {
-              return `${key}=${updatedValues[key.toLowerCase()]}`;
-            }
-            return line;
-          })
-          .join('\n');
-          
+        // Parse the example env content
+        let envContent = envExample;
+        
+        // Replace values in the template
+        Object.entries(updatedValues).forEach(([key, val]) => {
+          if (val) {
+            const regex = new RegExp(`${key}=.*`, 'g');
+            envContent = envContent.replace(regex, `${key}=${val}`);
+          }
+        });
+        
         // Write to .env file
-        await fs.writeFile(path.join(process.cwd(), '.env'), envContent);
+        await fs.writeFile(path.join(rootDir, '.env'), envContent);
         setSuccess(true);
         
         // Exit after showing success message
@@ -93,46 +119,31 @@ export const SetupWizard = ({ reset = false }) => {
       }
     } else {
       // Move to next step
-      setValues({ ...values, [step.id]: value });
-      setValue(steps[currentStep + 1].default);
+      setValues({ ...values, [currentField.id]: value });
       setCurrentStep(currentStep + 1);
     }
   };
 
-  // Load existing values if present
-  React.useEffect(() => {
-    const loadExistingConfig = async () => {
-      try {
-        if (!reset) {
-          const envPath = path.join(process.cwd(), '.env');
-          const fileExists = await fs.access(envPath).then(() => true).catch(() => false);
-          
-          if (fileExists) {
-            const content = await fs.readFile(envPath, 'utf8');
-            const existingValues = {};
-            
-            content.split('\n').forEach(line => {
-              if (line && !line.startsWith('#')) {
-                const [key, val] = line.split('=');
-                if (key && val) {
-                  existingValues[key.toLowerCase()] = val;
-                }
-              }
-            });
-            
-            setValues(existingValues);
-          }
-        }
-        
-        // Set the initial value for the first step
-        setValue(steps[0].default);
-      } catch (err) {
-        console.error('Failed to load config:', err);
+  // Handle keyboard navigation
+  const handleKeyPress = (key) => {
+    if (key.escape) {
+      if (currentStep > 0) {
+        setCurrentStep(currentStep - 1);
+      } else {
+        exit();
       }
-    };
-    
-    loadExistingConfig();
-  }, [reset]);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text>
+          <Spinner type="dots" /> Loading configuration...
+        </Text>
+      </Box>
+    );
+  }
 
   if (success) {
     return (
@@ -147,10 +158,23 @@ export const SetupWizard = ({ reset = false }) => {
   return (
     <Box flexDirection="column" padding={1}>
       <Text bold>SimpleRPC Setup Wizard</Text>
-      <Text>{currentStep + 1} of {steps.length}: {step.label}</Text>
-      <Text dimColor>{step.description}</Text>
+      <Text>Step {currentStep + 1} of {fields.length}</Text>
       
-      {error && <Text color="red">{error}</Text>}
+      <Box marginTop={1}>
+        <Text bold color={currentField.required ? 'yellow' : 'blue'}>
+          {currentField.label}:
+        </Text>
+      </Box>
+      
+      <Box marginTop={1}>
+        <Text dimColor>{descriptions[currentField.id] || ''}</Text>
+      </Box>
+      
+      {error && (
+        <Box marginTop={1}>
+          <Text color="red">{error}</Text>
+        </Box>
+      )}
       
       {saving ? (
         <Box marginTop={1}>
@@ -164,13 +188,16 @@ export const SetupWizard = ({ reset = false }) => {
             value={value}
             onChange={setValue}
             onSubmit={handleSubmit}
-            placeholder={step.default}
+            placeholder={currentField.default || ''}
           />
         </Box>
       )}
       
-      <Box marginTop={2}>
-        <Text dimColor>Press Enter to {currentStep === steps.length - 1 ? 'save' : 'continue'}</Text>
+      <Box marginTop={2} flexDirection="column">
+        <Text dimColor>Press Enter to {currentStep === fields.length - 1 ? 'save' : 'continue'}</Text>
+        {currentStep > 0 && (
+          <Text dimColor>Press Escape to go back</Text>
+        )}
       </Box>
     </Box>
   );
