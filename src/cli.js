@@ -48,23 +48,23 @@ const cli = meow(`
   flags: {
     help: {
       type: 'boolean',
-      alias: 'h'
+      shortFlag: 'h'  // Changed from 'alias' to 'shortFlag'
     },
     setup: {
       type: 'boolean',
-      alias: 's'
+      shortFlag: 's'  // Changed from 'alias' to 'shortFlag'
     },
     reset: {
       type: 'boolean',
-      alias: 'r'
+      shortFlag: 'r'  // Changed from 'alias' to 'shortFlag'
     },
     version: {
       type: 'boolean',
-      alias: 'v'
+      shortFlag: 'v'  // Changed from 'alias' to 'shortFlag'
     },
     detach: {
       type: 'boolean',
-      alias: 'd'
+      shortFlag: 'd'  // Changed from 'alias' to 'shortFlag'
     },
     status: {
       type: 'boolean'
@@ -74,6 +74,8 @@ const cli = meow(`
     }
   }
 });
+
+// Rest of your CLI code remains unchanged...
 
 /**
  * Write PID to file
