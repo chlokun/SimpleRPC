@@ -1,35 +1,101 @@
 # SimpleRPC
-Simple, cross platform Discord RPC server that can be run using node.
 
-## Prerequisites
-In order to run this app **you will need to install Node.js and npm.** Node.js can be downloaded from [here](https://nodejs.org/en/download/). Npm is included with Node.js, so you don't need to download it separately.
-You will also need a Discord application with a client ID and secret,
-and a code editor like Vim or VS Code.
+A feature-rich Discord Rich Presence client with a Terminal User Interface (TUI).
 
-## Setup
-To setup and run the RPC server, you need to clone the repo and run the following commands:
-- `npm i discord-rpc`
-- `npm i dotenv`
-- `npm i discord.js`
+![SimpleRPC Demo](https://via.placeholder.com/800x400?text=SimpleRPC+Demo)
 
-Before running the server, you need to make a `.env` file in the discord-rpc-server folder and add the contents of the `.env.example` file to it. I made sure to add comments to the `.env.example` file to help you understand what each variable does.
+## Features
 
-**To get the variables, you will need to create a Discord application and get the client ID and secret.**
+- 🖥️ **Modern Terminal UI** - Intuitive, keyboard-navigable interface
+- ⚡ **Live Updates** - Real-time display of your Discord presence
+- 🔄 **Easy Configuration** - Visual editor for all settings
+- 🧙‍♂️ **Setup Wizard** - Guided setup for first-time users
+- 📊 **Status Dashboard** - Monitor connection status and activity
+- 📝 **Live Logs** - View application events in real-time
 
-This can be done be going to  the [Discord Developer Portal](https://discord.com/developers/applications) and creating a new application. To add media, you need to go to the Rich Presence tab and at the bottom of the page, click on "Add an Image" and upload the images you want to use. Discord has some restrictions that apply to uploading images and those are:
+## Installation
 
-- The image must be a `.png`, `.jpg` or `.jpeg`
-- The image must be at least 512x512 pixels with the recomended resolution being 1024x1024.
+### Global Installation (Recommended)
 
+```bash
+# Install globally
+npm install -g simplerpc
 
-Everything else is documented in the `.env.example` file :))
+# Run the application
+rpc
+```
 
-## Running the server
+### Local Installation
 
-To run the server, run the following command: `node index.js` and it should start the server. To see if it works, just check Discord and see if the RPC is showing up. Or in the terminal, it should say RPC connected.
+```bash
+# Clone the repository
+git clone https://github.com/chlokun/SimpleRPC.git
+cd SimpleRPC
 
-In case of it erroring out, please open an issue featuring the error message and I will try to fix it as soon as possible.
+# Install dependencies
+npm install
 
-## Support
+# Run the application
+npm start
+```
 
-If you want to support my work, just star the repo and follow me on GitHub. Im not the type of person who asks for money.
+## Usage
+
+```bash
+# Start SimpleRPC
+rpc
+
+# Run setup wizard
+rpc --setup
+
+# Reset configuration
+rpc --reset
+
+# Show help
+rpc --help
+```
+
+## Configuration
+
+SimpleRPC uses environment variables stored in a `.env` file for configuration. You can edit this file directly or use the built-in configuration editor.
+
+### Required Configuration
+
+- `CLIENT_ID` - Your Discord application client ID
+
+### Optional Configuration
+
+- `DETAILS` - First line of your presence
+- `STATE` - Second line of your presence
+- `ACTIVITY_TYPE` - Type of activity (0=Playing, 1=Streaming, 2=Listening, 3=Watching, 5=Competing)
+- `LARGE_IMAGE_KEY` - Key for the large image
+- `LARGE_IMAGE_TEXT` - Text shown when hovering over the large image
+- `SMALL_IMAGE_KEY` - Key for the small image
+- `SMALL_IMAGE_TEXT` - Text shown when hovering over the small image
+- `BUTTON_LABEL` - Label for the first button
+- `BUTTON_URL` - URL for the first button
+- `BUTTON2_LABEL` - Label for the second button
+- `BUTTON2_URL` - URL for the second button
+
+## Creating a Discord Application
+
+1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
+2. Click "New Application" and give it a name
+3. Go to the "Rich Presence" tab
+4. Upload images in the "Rich Presence Assets" section
+5. Copy the "Client ID" from the General Information tab
+
+## Keyboard Controls
+
+- `1` or `D` - Go to Dashboard
+- `2` or `C` - Go to Configuration
+- `3` or `L` - Go to Logs
+- `Ctrl+Q` - Quit the application
+
+## License
+
+[ISC License](LICENSE)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
